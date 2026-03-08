@@ -1,23 +1,42 @@
 using AzureInventoryAPI.Services;
+using AzureInventoryAPI.Repositories;
+using AzureInventoryAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// -----------------------------
+// Add services to the container
+// -----------------------------
 
+builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddControllers();
-builder.Services.AddSingleton<ProductService>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Register DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    ));
+
+// Register Repository Layer
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+// Register Service Layer
+builder.Services.AddScoped<ProductService>();
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+// -----------------------------
+// Configure HTTP request pipeline
+// -----------------------------
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

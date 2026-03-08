@@ -1,23 +1,25 @@
 ﻿using AzureInventoryAPI.Models;
+using AzureInventoryAPI.Repositories;
 
 namespace AzureInventoryAPI.Services
 {
     public class ProductService
     {
-        private static List<Product> products = new List<Product>()
+        private readonly IProductRepository _repository;
+
+        public ProductService(IProductRepository repository)
         {
-            new Product { Id = 1, Name = "Laptop", Price = 50000 },
-            new Product { Id = 2, Name = "Mouse", Price = 500 }
-        };
+            _repository = repository;
+        }
 
         public List<Product> GetProducts()
         {
-            return products;
+            return _repository.GetAllProducts();
         }
 
-        public void AddProduct(Product product)
+        public Product AddProduct(Product product)
         {
-            products.Add(product);
+            return _repository.AddProduct(product);
         }
     }
 }

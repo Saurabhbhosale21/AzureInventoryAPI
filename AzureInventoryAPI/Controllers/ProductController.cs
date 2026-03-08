@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AzureInventoryAPI.Services;
+using AzureInventoryAPI.DTOs;
 using AzureInventoryAPI.Models;
 
 namespace AzureInventoryAPI.Controllers
@@ -15,17 +16,27 @@ namespace AzureInventoryAPI.Controllers
             _productService = productService;
         }
 
+        // GET: api/Product
         [HttpGet]
         public IActionResult GetProducts()
         {
-            return Ok(_productService.GetProducts());
+            var products = _productService.GetProducts();
+            return Ok(products);
         }
 
+        // POST: api/Product
         [HttpPost]
-        public IActionResult AddProduct(Product product)
+        public IActionResult AddProduct(ProductDto dto)
         {
-            _productService.AddProduct(product);
-            return Ok(product);
+            var product = new Product
+            {
+                Name = dto.Name,
+                Price = dto.Price
+            };
+
+            var result = _productService.AddProduct(product);
+
+            return Ok(result);
         }
     }
 }
